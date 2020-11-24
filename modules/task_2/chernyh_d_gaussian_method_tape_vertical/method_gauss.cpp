@@ -105,8 +105,8 @@ double SolutionCheck(std::vector<double> A, std::vector<double> b,
 std::vector<double> getSequentialMethod(std::vector<double> A, std::vector<double> b, int count_row, int count_str) {
   std::vector<double> x(count_row, 0);
   double sum = 0;
-  if (count_str != count_row || b.size() != count_str || count_str <= 0) {
-    throw - 1;
+  if (count_str != count_row || count_str <= 0) {
+    throw std::runtime_error("Wrong size");
   }
   MatrixPermut(&A, &b, count_row, count_str);
   // calculate coeff
@@ -116,7 +116,7 @@ std::vector<double> getSequentialMethod(std::vector<double> A, std::vector<doubl
   for (int i = count_row - 1; i >= 0; i--) {
     sum = 0;
     if (b[i] != 0 && A[i*count_row + i] == 0) {
-      throw - 1;
+      throw std::runtime_error("Inconistent system");
     } else {
         for (int j = i; j < count_str; j++) {
           sum += x[j] * A[i*count_row + j];
@@ -142,7 +142,7 @@ std::vector<double> getParallelMethod(std::vector<double> global_mat, std::vecto
     MPI_Bcast(&code, 1, MPI_INT, 0, MPI_COMM_WORLD);
   }
   if (code != 0) {
-    throw - 1;
+    throw std::runtime_error("Wrong size");
   }
   std::vector<double> global_mat_t(count_row*count_str, 0);
   if (size > count_row) {
@@ -316,7 +316,7 @@ std::vector<double> getParallelMethod(std::vector<double> global_mat, std::vecto
     MPI_Bcast(&code, 1, MPI_INT, proc, MPI_COMM_WORLD);
   }
   if (code == -1) {
-    throw -1;
+    throw std::runtime_error("Inconistent system");
   }
   std::vector<double> global_rez(count_row, 0);
   std::vector<int> recvcount(size, 0);
